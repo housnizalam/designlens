@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'dart:math' as math;
 
-import 'design_gradient.dart';
 import '../models/design_color_tokens.dart';
 
 import 'package:flutter/material.dart';
@@ -199,270 +198,308 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
       3.5,
     ][borderIndex < 0 ? 1 : borderIndex];
 
-    return Container(
-      clipBehavior: Clip.antiAlias,
+    const availableFonts = [
+      'Cairo',
+      'Tajawal',
+      'IBM Plex Sans Arabic',
+      'Amiri',
+      'Reem Kufi',
+      'Aref Ruqaa',
+      'Changa',
+      'Noto Naskh Arabic',
+    ];
 
-      decoration: BoxDecoration(
-        color: previewGradient == null ? background : null,
-        gradient: previewGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: effectiveBorderColor),
+    final preferredFont = answer('font_personality');
+
+    final String? previewFont = availableFonts.contains(preferredFont)
+        ? preferredFont
+        : null;
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: previewFont),
       ),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
 
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ----- الشريط العلوي -----
+        decoration: BoxDecoration(
+          color: previewGradient == null ? background : null,
+          gradient: previewGradient,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: effectiveBorderColor),
+        ),
 
-            Container(
-              color: primary,
-              padding: const EdgeInsets.all(17),
-              child: Row(
-                children: [
-                  Icon(Icons.dashboard_outlined, color: accent),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'تطبيقي',
-                      style: TextStyle(
-                        color: readableText(primary),
-                        fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ----- الشريط العلوي -----
+
+              Container(
+                color: primary,
+                padding: const EdgeInsets.all(17),
+                child: Row(
+                  children: [
+                    Icon(Icons.dashboard_outlined, color: accent),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'تطبيقي',
+                        style: TextStyle(
+                          fontFamily: previewFont,
+                          color: readableText(primary),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  Icon(Icons.menu, color: accent),
-                ],
+                    Icon(Icons.menu, color: accent),
+                  ],
+                ),
               ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ----- العناوين -----
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ----- العناوين -----
 
-                  Text(
-                    'مرحبًا بك',
-                    style: TextStyle(
-                      color: readableText(background),
-                      fontSize: headingSize,
-                      fontWeight: headingWeight,
+                    Text(
+                      'مرحبًا بك',
+                      style: TextStyle(
+                        fontFamily: previewFont,
+                        color: readableText(background),
+                        fontSize: headingSize,
+                        fontWeight: headingWeight,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'اكتشف الخدمات المتاحة',
-                    style: TextStyle(
-                      color: readableText(background).withValues(alpha: 0.85),
-                      fontSize: 13,
+                    const SizedBox(height: 5),
+                    Text(
+                      'اكتشف الخدمات المتاحة',
+                      style: TextStyle(
+                        fontFamily: previewFont,
+                        color: readableText(background).withValues(alpha: 0.85),
+                        fontSize: 13,
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 23),
+                    const SizedBox(height: 23),
 
-                  // ----- البطاقات الثلاث -----
-                  AnimatedBuilder(
-                    animation: _motion,
-                    builder: (context, _) {
-                      final intensity = _motionLevel / 4.0;
-                      final phase = _motion.value * math.pi;
-                      Widget card(int index, IconData icon, String label) {
-                        final phase = _motion.value * 2 * math.pi + index * 0.7;
-                        final wave = math.sin(phase);
+                    // ----- البطاقات الثلاث -----
+                    AnimatedBuilder(
+                      animation: _motion,
+                      builder: (context, _) {
+                        final intensity = _motionLevel / 4.0;
+                        Widget card(int index, IconData icon, String label) {
+                          final phase =
+                              _motion.value * 2 * math.pi + index * 0.7;
+                          final wave = math.sin(phase);
 
-                        final scaleAmount = 0.065 * intensity;
-                        final rotationAmount = 0.13 * intensity;
-                        final movementAmount = 14.0 * intensity;
+                          final scaleAmount = 0.065 * intensity;
+                          final rotationAmount = 0.13 * intensity;
+                          final movementAmount = 14.0 * intensity;
 
-                        return Expanded(
-                          child: Transform.translate(
-                            offset: Offset(
-                              math.cos(phase) * movementAmount * 0.35,
-                              -wave * movementAmount,
-                            ),
-                            child: Transform.rotate(
-                              angle: wave * rotationAmount,
-                              child: Transform.scale(
-                                scale: 1 + wave * scaleAmount,
-                                child: _PreviewFeatureCard(
-                                  icon: icon,
-                                  label: label,
-                                  color: accent,
-                                  background: featureCardBackground,
-                                  textColor: readableText(primary),
-                                  borderColor: effectiveBorderColor,
-                                  radius: radius,
-                                  shadow: shadows,
-                                  borderWidth: borderWidth,
-                                  shapeStyle: preferredShape,
-                                  index: index,
+                          return Expanded(
+                            child: Transform.translate(
+                              offset: Offset(
+                                math.cos(phase) * movementAmount * 0.35,
+                                -wave * movementAmount,
+                              ),
+                              child: Transform.rotate(
+                                angle: wave * rotationAmount,
+                                child: Transform.scale(
+                                  scale: 1 + wave * scaleAmount,
+                                  child: _PreviewFeatureCard(
+                                    fontFamily: previewFont,
+                                    icon: icon,
+                                    label: label,
+                                    color: accent,
+                                    background: featureCardBackground,
+                                    textColor: readableText(primary),
+                                    borderColor: effectiveBorderColor,
+                                    radius: radius,
+                                    shadow: shadows,
+                                    borderWidth: borderWidth,
+                                    shapeStyle: preferredShape,
+                                    index: index,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                          );
+                        }
+
+                        return Row(
+                          children: [
+                            card(0, Icons.home_outlined, 'الرئيسية'),
+                            const SizedBox(width: 16),
+                            card(1, Icons.star_outline, 'المميزات'),
+                            const SizedBox(width: 16),
+                            card(2, Icons.person_outline, 'الحساب'),
+                          ],
                         );
-                      }
-
-                      return Row(
-                        children: [
-                          card(0, Icons.home_outlined, 'الرئيسية'),
-                          const SizedBox(width: 16),
-                          card(1, Icons.star_outline, 'المميزات'),
-                          const SizedBox(width: 16),
-                          card(2, Icons.person_outline, 'الحساب'),
-                        ],
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 28),
-
-                  // ----- البطاقة التجريبية -----
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: glassBackdrop,
-                      borderRadius: BorderRadius.circular(radius),
+                      },
                     ),
-                    child: Container(
+
+                    const SizedBox(height: 28),
+
+                    // ----- البطاقة التجريبية -----
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: glassBackdrop,
+                        borderRadius: BorderRadius.circular(radius),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(radius),
+                          boxShadow: shadows,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(radius),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(
+                              sigmaX: glassBlur,
+                              sigmaY: glassBlur,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: demoCardColor.withValues(
+                                  alpha: glassAlpha,
+                                ),
+                                border: borderWidth == 0
+                                    ? null
+                                    : Border.all(
+                                        color: effectiveBorderColor,
+                                        width: borderWidth,
+                                      ),
+                                borderRadius: BorderRadius.circular(radius),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.widgets_outlined,
+                                        color: accent,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'بطاقة تجريبية',
+                                          style: TextStyle(
+                                            fontFamily: previewFont,
+                                            color: readableText(demoCardColor),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'هنا يظهر شكل البطاقة والألوان '
+                                    'والظل الذي اخترته.',
+                                    style: TextStyle(
+                                      fontFamily: previewFont,
+                                      color: readableText(demoCardColor),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  // عنصر ملون داخل البطاقة.
+                                  Container(
+                                    height: 9,
+                                    decoration: BoxDecoration(
+                                      color: hasAccent ? accent : primary,
+                                      borderRadius: BorderRadius.circular(
+                                        radius,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ----- زر رئيسي -----
+                    DecoratedBox(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(radius),
                         boxShadow: shadows,
                       ),
-                      child: ClipRRect(
+                      child: FilledButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.arrow_forward),
+                        label: Text(
+                          'ابدأ الآن',
+                          style: TextStyle(fontFamily: previewFont),
+                        ),
+                        style: FilledButton.styleFrom(
+                          textStyle: TextStyle(fontFamily: previewFont),
+                          backgroundColor: hasAccent ? accent : primary,
+                          foregroundColor: readableText(
+                            hasAccent ? accent : primary,
+                          ),
+                          elevation: 0,
+                          minimumSize: const Size.fromHeight(50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(radius),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // ----- عنصر ثانوي -----
+                    Container(
+                      padding: const EdgeInsets.all(13),
+                      decoration: BoxDecoration(
+                        color: primary,
                         borderRadius: BorderRadius.circular(radius),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(
-                            sigmaX: glassBlur,
-                            sigmaY: glassBlur,
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: demoCardColor.withValues(
-                                alpha: glassAlpha,
+                        border: borderWidth == 0
+                            ? null
+                            : Border.all(
+                                color: effectiveBorderColor,
+                                width: borderWidth,
                               ),
-                              border: borderWidth == 0
-                                  ? null
-                                  : Border.all(
-                                      color: effectiveBorderColor,
-                                      width: borderWidth,
-                                    ),
-                              borderRadius: BorderRadius.circular(radius),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.widgets_outlined, color: accent),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'بطاقة تجريبية',
-                                        style: TextStyle(
-                                          color: readableText(demoCardColor),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'هنا يظهر شكل البطاقة والألوان '
-                                  'والظل الذي اخترته.',
-                                  style: TextStyle(
-                                    color: readableText(demoCardColor),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-
-                                // عنصر ملون داخل البطاقة.
-                                Container(
-                                  height: 9,
-                                  decoration: BoxDecoration(
-                                    color: hasAccent ? accent : primary,
-                                    borderRadius: BorderRadius.circular(radius),
-                                  ),
-                                ),
-                              ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: accent),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'عنصر إضافي من تصميمك',
+                              style: TextStyle(
+                                fontFamily: previewFont,
+                                color: readableText(primary),
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ----- زر رئيسي -----
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(radius),
-                      boxShadow: shadows,
-                    ),
-                    child: FilledButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('ابدأ الآن'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: hasAccent ? accent : primary,
-                        foregroundColor: readableText(
-                          hasAccent ? accent : primary,
-                        ),
-                        elevation: 0,
-                        minimumSize: const Size.fromHeight(50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(radius),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // ----- عنصر ثانوي -----
-                  Container(
-                    padding: const EdgeInsets.all(13),
-                    decoration: BoxDecoration(
-                      color: primary,
-                      borderRadius: BorderRadius.circular(radius),
-                      border: borderWidth == 0
-                          ? null
-                          : Border.all(
-                              color: effectiveBorderColor,
-                              width: borderWidth,
-                            ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline, color: accent),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'عنصر إضافي من تصميمك',
-                            style: TextStyle(
-                              color: readableText(primary),
-                              fontSize: 13,
-                            ),
+                          Icon(
+                            Icons.chevron_left,
+                            color: hasAccent ? accent : primary,
                           ),
-                        ),
-                        Icon(
-                          Icons.chevron_left,
-                          color: hasAccent ? accent : primary,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -472,6 +509,7 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
 class _PreviewFeatureCard extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String? fontFamily;
   final Color color;
   final Color background;
   final Color textColor;
@@ -485,6 +523,7 @@ class _PreviewFeatureCard extends StatelessWidget {
   const _PreviewFeatureCard({
     required this.icon,
     required this.label,
+    required this.fontFamily,
     required this.color,
     required this.background,
     required this.textColor,
@@ -512,6 +551,7 @@ class _PreviewFeatureCard extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
+              fontFamily: fontFamily,
               color: textColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,

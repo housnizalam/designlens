@@ -221,6 +221,7 @@ const List<DesignQuestion> questions = [
     type: QuestionType.shapePreview,
     options: [
       'مستطيلات',
+      'مستطيلات بحواف دائرية',
       'دوائر',
       'أشكال هندسية متنوعة',
       'أشكال ناعمة وغير منتظمة',
@@ -296,17 +297,20 @@ const List<DesignQuestion> questions = [
   // الخطوط
   DesignQuestion(
     id: 'font_personality',
-    title: 'أي طريقة كتابة تعجبك أكثر؟',
-    description: 'انظر إلى شكل النص في الأمثلة. لسنا بحاجة لمعرفة أسماء الخطوط.',
+    title: 'أي خط عربي تفضّل لتطبيقك؟',
+    description: 'قارن بين خطوط عربية حقيقية. يمكنك أيضًا كتابة اسم خط آخر تفضّله.',
     type: QuestionType.typographyPreview,
     options: [
-      'رسمي وواضح',
-      'حديث وأنيق',
-      'هندسي وتقني',
-      'ناعم وودود',
-      'فاخر',
-      'مرح',
-      'بسيط جدًا',
+      'Cairo',
+      'Tajawal',
+      'IBM Plex Sans Arabic',
+      'Amiri',
+      'Reem Kufi',
+      'Aref Ruqaa',
+      'Changa',
+      'Noto Naskh Arabic',
+      'خط آخر من اختياري',
+      'أترك اختيار الخط للمصمم',
     ],
   ),
   DesignQuestion(

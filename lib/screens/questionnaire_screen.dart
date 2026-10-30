@@ -9,6 +9,7 @@ import '../widgets/color_preferences_widget.dart';
 import '../widgets/gradient_question_widget.dart';
 import '../widgets/visual_choice_card.dart';
 import '../widgets/reference_question_widget.dart';
+import '../widgets/arabic_font_question_widget.dart';
 import 'review_screen.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
@@ -94,6 +95,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             answers[question.id] = entries;
           });
         },
+      );
+    }
+
+    if (question.id == 'font_personality') {
+      return ArabicFontQuestionWidget(
+        selectedValue: selectedAnswers.firstOrNull,
+        onSelected: selectOption,
       );
     }
 

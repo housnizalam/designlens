@@ -21,6 +21,31 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/arabic/Cairo-Regular.ttf
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/arabic/Tajawal-Regular.ttf
+    - family: IBM Plex Sans Arabic
+      fonts:
+        - asset: assets/fonts/arabic/IBMPlexSansArabic-Regular.ttf
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/arabic/Amiri-Regular.ttf
+    - family: Reem Kufi
+      fonts:
+        - asset: assets/fonts/arabic/ReemKufi-Regular.ttf
+    - family: Aref Ruqaa
+      fonts:
+        - asset: assets/fonts/arabic/ArefRuqaa-Regular.ttf
+    - family: Changa
+      fonts:
+        - asset: assets/fonts/arabic/Changa-Regular.ttf
+    - family: Noto Naskh Arabic
+      fonts:
+        - asset: assets/fonts/arabic/NotoNaskhArabic-Regular.ttf
 
   assets:
     - assets/images/ui_styles/
