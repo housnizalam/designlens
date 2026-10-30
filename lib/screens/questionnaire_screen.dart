@@ -226,6 +226,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           double.tryParse(answers['gradient_balance']?.firstOrNull ?? '') ??
           50.0;
 
+      final savedTransitionWidth =
+          double.tryParse(answers['gradient_transition_width']?.firstOrNull ?? '') ?? 30.0;
+
       Color parseColor(String? hex) {
         if (hex == null || !RegExp(r'^#[0-9a-fA-F]{6}$').hasMatch(hex)) {
           return const Color(0xFF64748B);
@@ -251,6 +254,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         secondColor: secondColor,
         direction: savedDirection,
         balance: savedBalance,
+        transitionWidth: savedTransitionWidth,
+        onTransitionWidthChanged: (value) {
+          setState(() {
+            answers['gradient_transition_width'] = [value.round().toString()];
+          });
+        },
         onModeSelected: selectOption,
         onCustomColorSelected: (value) {
           setState(() {

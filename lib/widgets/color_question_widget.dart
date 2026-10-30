@@ -59,6 +59,16 @@ class ColorQuestionWidget extends StatelessWidget {
           : const Color(0xFF2455A4),
     );
 
+    final hexController = TextEditingController(text: toHex(hsv.toColor()));
+    String? hexError;
+    void updateFromSlider(HSVColor next, StateSetter setDialogState) {
+      setDialogState(() {
+        hsv = next;
+        hexController.text = toHex(hsv.toColor());
+        hexError = null;
+      });
+    }
+
     final result = await showDialog<Color>(
       context: context,
       builder: (dialogContext) {
@@ -88,16 +98,41 @@ class ColorQuestionWidget extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: hexController,
+                      textDirection: TextDirection.ltr,
+                      textCapitalization: TextCapitalization.characters,
+                      maxLength: 7,
+                      decoration: InputDecoration(
+                        labelText: 'رمز اللون HEX',
+                        hintText: '#38BDF8',
+                        errorText: hexError,
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        final normalized = value.trim().replaceFirst(RegExp(r'^#'), '');
+                        final valid = RegExp(r'^[0-9a-fA-F]{6}$').hasMatch(normalized);
+                        setDialogState(() {
+                          if (valid) {
+                            hsv = HSVColor.fromColor(Color(
+                              int.parse(normalized, radix: 16) | 0xFF000000,
+                            ));
+                            hexError = null;
+                          } else {
+                            hexError = 'اكتب 6 خانات HEX، مثل #38BDF8';
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
                     const Text('تغيير اللون'),
                     Slider(
                       min: 0,
                       max: 360,
                       value: hsv.hue,
                       onChanged: (value) {
-                        setDialogState(() {
-                          hsv = hsv.withHue(value);
-                        });
+                        updateFromSlider(hsv.withHue(value), setDialogState);
                       },
                     ),
                     const Text('قوة اللون'),
@@ -106,9 +141,7 @@ class ColorQuestionWidget extends StatelessWidget {
                       max: 1,
                       value: hsv.saturation,
                       onChanged: (value) {
-                        setDialogState(() {
-                          hsv = hsv.withSaturation(value);
-                        });
+                        updateFromSlider(hsv.withSaturation(value), setDialogState);
                       },
                     ),
                     const Text('درجة الإضاءة'),
@@ -117,9 +150,7 @@ class ColorQuestionWidget extends StatelessWidget {
                       max: 1,
                       value: hsv.value,
                       onChanged: (value) {
-                        setDialogState(() {
-                          hsv = hsv.withValue(value);
-                        });
+                        updateFromSlider(hsv.withValue(value), setDialogState);
                       },
                     ),
                   ],
@@ -131,7 +162,9 @@ class ColorQuestionWidget extends StatelessWidget {
                   child: const Text('إلغاء'),
                 ),
                 FilledButton(
-                  onPressed: () => Navigator.pop(dialogContext, hsv.toColor()),
+                  onPressed: hexError == null
+                      ? () => Navigator.pop(dialogContext, hsv.toColor())
+                      : null,
                   child: const Text('اعتماد اللون'),
                 ),
               ],
@@ -140,6 +173,7 @@ class ColorQuestionWidget extends StatelessWidget {
         );
       },
     );
+    hexController.dispose();
 
     if (result != null) {
       onSelected(toHex(result));

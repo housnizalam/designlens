@@ -10,6 +10,8 @@ class GradientQuestionWidget extends StatelessWidget {
   final ValueChanged<String> onCustomColorSelected;
   final String direction;
   final double balance;
+  final double transitionWidth;
+  final ValueChanged<double> onTransitionWidthChanged;
   final ValueChanged<String> onDirectionChanged;
   final ValueChanged<double> onBalanceChanged;
   final Color firstColor;
@@ -23,6 +25,8 @@ class GradientQuestionWidget extends StatelessWidget {
     required this.onCustomColorSelected,
     required this.direction,
     required this.balance,
+    required this.transitionWidth,
+    required this.onTransitionWidthChanged,
     required this.onDirectionChanged,
     required this.onBalanceChanged,
     required this.firstColor,
@@ -150,6 +154,7 @@ class GradientQuestionWidget extends StatelessWidget {
                                     second: secondColor,
                                     direction: item.$1,
                                     balance: balance,
+                                    transitionWidthPercent: transitionWidth,
                                   ),
                                 ),
                               ),
@@ -200,6 +205,27 @@ class GradientQuestionWidget extends StatelessWidget {
             ],
           ),
 
+          const SizedBox(height: 22),
+          Text('ما مدى اتساع منطقة اندماج اللونين؟',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 6),
+          const Text('ضيق: انتقال حاد — واسع: انتقال تدريجي ناعم.'),
+          Slider(
+            min: 0,
+            max: 100,
+            divisions: 20,
+            value: transitionWidth,
+            label: '${transitionWidth.round()}%',
+            onChanged: onTransitionWidthChanged,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('انتقال حاد'),
+              Text('${transitionWidth.round()}%'),
+              const Text('انتقال ناعم'),
+            ],
+          ),
           const SizedBox(height: 12),
 
           Container(
@@ -211,6 +237,7 @@ class GradientQuestionWidget extends StatelessWidget {
                 second: secondColor,
                 direction: direction,
                 balance: balance,
+                transitionWidthPercent: transitionWidth,
               ),
             ),
           ),

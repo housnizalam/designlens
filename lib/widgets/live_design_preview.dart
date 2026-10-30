@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:math' as math;
 
 import 'design_gradient.dart';
+import '../models/design_color_tokens.dart';
 
 import 'package:flutter/material.dart';
 
@@ -116,51 +117,15 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
 
   @override
   Widget build(BuildContext context) {
-    // الألوان المختارة فعليًا.
-    final chosenPrimary = selectedColor('primary_color');
-    final chosenAccent = selectedColor('accent_color');
+    final tokens = DesignColorTokens.fromAnswers(widget.answers);
 
-    // لا نعرض Gradient إلا عند اختياره صراحة.
-    final gradientMode = answer('gradient_mode');
+    final primary = tokens.primary;
+    final accent = tokens.accent;
 
-    final customGradientColor = selectedColor('gradient_custom_color');
+    final hasPrimary = tokens.selectedPrimary != null;
+    final hasAccent = tokens.selectedAccent != null;
 
-    Color? gradientEnd;
-
-    if (gradientMode == 'primary_accent') {
-      gradientEnd = chosenAccent;
-    } else if (gradientMode == 'primary_custom') {
-      gradientEnd = customGradientColor;
-    }
-
-    final useGradient = chosenPrimary != null && gradientEnd != null;
-
-    final gradientDirection = answer('gradient_direction') ?? 'diagonal';
-
-    final gradientBalance =
-        double.tryParse(answer('gradient_balance') ?? '') ?? 50.0;
-
-    final Gradient? previewGradient = useGradient
-        ? DesignGradient.build(
-            first: chosenPrimary,
-            second: gradientEnd,
-            direction: gradientDirection,
-            balance: gradientBalance,
-          )
-        : null;
-
-    // رمادي محايد عند عدم الاختيار.
-    final primary = chosenPrimary ?? const Color(0xFF64748B);
-
-    final accent = chosenAccent ?? const Color(0xFF94A3B8);
-
-    final hasPrimary = chosenPrimary != null;
-    final hasAccent = chosenAccent != null;
-
-    final strengthText = answer('primary_color_strength');
-
-    final colorStrength =
-        ((double.tryParse(strengthText ?? '') ?? 60.0) / 100.0).clamp(0.0, 1.0);
+    final previewGradient = tokens.gradient;
 
     final radiusIndex = optionIndex('corners', [
       'حواف حادة',
@@ -207,67 +172,14 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
     final headingWeight = headingChoice == 'صغيرة وهادئة'
         ? FontWeight.w500
         : FontWeight.bold;
+    final darkMode = tokens.darkMode;
 
-    final themeAnswer = answer('theme') ?? '';
-    final darkMode = themeAnswer.startsWith('داكنة');
-
-    // ----- لوحة الألوان المشتقة -----
-
-    final neutralBackground = darkMode
-        ? const Color(0xFF131820)
-        : const Color(0xFFF1F3F6);
-
-    final neutralSurface = darkMode ? const Color(0xFF242B35) : Colors.white;
-
-    final background = hasPrimary
-        ? mix(neutralBackground, primary, 0.05 + colorStrength * 0.95)
-        : neutralBackground;
-
-    // final surface = hasPrimary
-    //     ? mix(neutralSurface, primary, darkMode ? 0.18 : 0.08)
-    //     : neutralSurface;
+    final background = tokens.background;
+    final effectiveBorderColor = tokens.effectiveBorderColor;
+    final glassBackdrop = tokens.glassBackdrop;
 
     final featureCardBackground = primary;
-
-    // final foreground = darkMode ? Colors.white : const Color(0xFF1E293B);
-
-    // final secondaryText = darkMode
-    //     ? const Color(0xFFCBD5E1)
-    //     : const Color(0xFF475569);
-
-    final borderColor = mix(primary, neutralSurface, darkMode ? 0.50 : 0.65);
-
-    final borderColorMode = answer('border_color_mode');
-
-    final customBorderColor = selectedColor('border_custom_color');
-
-    final Color effectiveBorderColor;
-
-    if (borderColorMode == 'نفس اللون الإضافي الذي اخترته' &&
-        chosenAccent != null) {
-      effectiveBorderColor = chosenAccent;
-    } else if (borderColorMode == 'أريد اختيار لون خاص للإطارات' &&
-        customBorderColor != null) {
-      effectiveBorderColor = customBorderColor;
-    } else {
-      effectiveBorderColor = borderColor;
-    }
-
-    // لون البطاقة الداخلية من الهوية.
-
     final demoCardColor = primary;
-
-    // خلفية محايدة متباينة لإظهار الشفافية.
-    // لا يوجد Gradient.
-
-    final glassBackdrop = hasPrimary
-        ? mix(
-            mix(background, primary, 0.50),
-            darkMode ? Colors.white : Colors.black,
-            0.12,
-          )
-        : mix(background, neutralSurface, 0.50);
-
     final glassAlpha = <double>[1, 0.88, 0.65, 0.38, 0.18][glassLevel];
 
     final glassBlur = <double>[0, 2, 5, 9, 14][glassLevel];

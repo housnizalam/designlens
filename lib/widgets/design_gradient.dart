@@ -6,11 +6,12 @@ class DesignGradient {
     required Color second,
     required String direction,
     required double balance,
+    double transitionWidthPercent = 30,
   }) {
     final center = (balance / 100).clamp(0.0, 1.0);
 
     // مجال الانتقال الناعم بين اللونين.
-    const transitionWidth = 0.30;
+    final transitionWidth = transitionWidthPercent.clamp(0.0, 100.0) / 100.0;
 
     final start = (center - transitionWidth / 2).clamp(0.0, 1.0);
 
