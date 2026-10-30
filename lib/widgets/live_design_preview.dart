@@ -122,7 +122,6 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
     final primary = tokens.primary;
     final accent = tokens.accent;
 
-    final hasPrimary = tokens.selectedPrimary != null;
     final hasAccent = tokens.selectedAccent != null;
 
     final previewGradient = tokens.gradient;

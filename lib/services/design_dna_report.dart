@@ -6,40 +6,40 @@ import '../models/design_color_tokens.dart';
 /// Generates matching Arabic and English professional design briefs offline.
 /// Does not make up client preferences for unanswered questions.
 class DesignDnaReport {
-  static const Map<String, String> _titlesEn = {
-    'personality': 'Brand personality and emotional positioning',
-    'audience': 'Target audience',
-    'corners': 'Corner geometry',
-    'shadows': 'Elevation and shadows',
-    'glass': 'Translucency and backdrop treatment',
-    'primary_color': 'Primary brand color',
-    'accent_color': 'Accent / action color',
-    'avoided_colors': 'Excluded colors',
-    'color_style': 'Color palette character',
-    'theme': 'Appearance mode',
-    'gradient_mode': 'Gradient system',
-    'borders': 'Surface stroke weight',
-    'border_color_mode': 'Border color strategy',
-    'formality': 'Brand formality',
-    'simplicity': 'Visual complexity',
-    'visual_strength': 'Visual emphasis',
-    'futurism': 'Conventionality versus experimentation',
-    'preferred_shapes': 'Shape language',
-    'ui_style': 'Visual design direction',
-    'depth': 'Layering and spatial depth',
-    'density': 'Information density and whitespace',
-    'element_size': 'Interactive component sizing',
-    'information_presentation': 'Progressive disclosure strategy',
-    'font_personality': 'Typographic personality',
-    'heading_style': 'Heading hierarchy',
-    'content_emphasis': 'Content communication hierarchy',
-    'visual_content': 'Imagery and illustration direction',
-    'icon_style': 'Iconographic system',
-    'animation_amount': 'Motion intensity',
-    'interaction_feedback': 'Interaction feedback',
-    'liked_references': 'Positive design references',
-    'disliked_references': 'Negative design references and anti-patterns',
-  };
+  // static const Map<String, String> _titlesEn = {
+  //   'personality': 'Brand personality and emotional positioning',
+  //   'audience': 'Target audience',
+  //   'corners': 'Corner geometry',
+  //   'shadows': 'Elevation and shadows',
+  //   'glass': 'Translucency and backdrop treatment',
+  //   'primary_color': 'Primary brand color',
+  //   'accent_color': 'Accent / action color',
+  //   'avoided_colors': 'Excluded colors',
+  //   'color_style': 'Color palette character',
+  //   'theme': 'Appearance mode',
+  //   'gradient_mode': 'Gradient system',
+  //   'borders': 'Surface stroke weight',
+  //   'border_color_mode': 'Border color strategy',
+  //   'formality': 'Brand formality',
+  //   'simplicity': 'Visual complexity',
+  //   'visual_strength': 'Visual emphasis',
+  //   'futurism': 'Conventionality versus experimentation',
+  //   'preferred_shapes': 'Shape language',
+  //   'ui_style': 'Visual design direction',
+  //   'depth': 'Layering and spatial depth',
+  //   'density': 'Information density and whitespace',
+  //   'element_size': 'Interactive component sizing',
+  //   'information_presentation': 'Progressive disclosure strategy',
+  //   'font_personality': 'Typographic personality',
+  //   'heading_style': 'Heading hierarchy',
+  //   'content_emphasis': 'Content communication hierarchy',
+  //   'visual_content': 'Imagery and illustration direction',
+  //   'icon_style': 'Iconographic system',
+  //   'animation_amount': 'Motion intensity',
+  //   'interaction_feedback': 'Interaction feedback',
+  //   'liked_references': 'Positive design references',
+  //   'disliked_references': 'Negative design references and anti-patterns',
+  // };
 
   /// Each item is indexed against the corresponding question option.
   /// These are domain terms, never machine translations of Arabic UI labels.
@@ -241,9 +241,11 @@ class DesignDnaReport {
           if (_delegated(id, value)) continue;
           if (id == 'liked_references' || id == 'disliked_references') {
             final source = _reference(value, ar);
-            if (source.isNotEmpty) lines.add(id == 'liked_references'
+            if (source.isNotEmpty) {
+              lines.add(id == 'liked_references'
                 ? (ar ? 'مرجع إيجابي للاستلهام (وليس للنسخ): $source' : 'Positive inspiration reference (not a replication mandate): $source')
                 : (ar ? 'مرجع لتحديد الأنماط الواجب تجنبها: $source' : 'Negative reference / patterns to avoid: $source'));
+            }
           } else {
             lines.add(_interpret(id, value, ar));
           }
@@ -445,9 +447,11 @@ class DesignDnaReport {
     final theme = _first(answers, 'theme');
     if (theme != null) {
       line('وضع العرض المختار', 'Requested appearance', ar ? theme : _englishTerm(questions.firstWhere((q) => q.id == 'theme'), theme));
-      if (theme.startsWith('أريد الوضعين')) b.writeln(ar
+      if (theme.startsWith('أريد الوضعين')) {
+        b.writeln(ar
         ? '- تنبيه: وضع المعاينة الفاتح هو المعروض حاليًا؛ لم تُحسب لوحة داكنة مستقلة بعد. يجب إنشاء قيم الوضعين قبل اعتماد التسليم النهائي.'
         : '- Note: only the current light-mode preview palette is calculated. A distinct dark-mode palette must be resolved before final implementation.');
+      }
     }
     if (tokens.selectedPrimary != null) {
       line('خلفية البطاقات الرئيسية', 'Feature-card background', DesignColorTokens.hex(tokens.primary));
@@ -499,6 +503,6 @@ class DesignDnaReport {
     b.writeln(ar
         ? '- الخيارات المتروكة دون إجابة ليست قرارات تصميمية؛ تُترك لاجتهاد المصمم.\n- عند وجود اختيارات متعارضة، تُحفظ جميعها ويُوثَّق التعارض ليحسمه المصمم مع العميل؛ ولا تُغيَّر أي إجابة تلقائيًا.\n- لا يُعدّ المظهر التجريبي الافتراضي اختيارًا من العميل.\n- يجب اختبار التباين وسهولة القراءة وإمكانية الوصول، مع احترام هوية الألوان المختارة.'
         : '- Unanswered questions are not client decisions; leave them to designer discretion.\n- When selections conflict, preserve and document all of them for client–designer resolution; do not override any selection automatically.\n- Preview fallback defaults are not client selections.\n- Verify contrast, legibility, and accessibility while respecting the selected palette.');
-    return b.toString().trimRight() + '\n';
+    return '${b.toString().trimRight()}\n';
   }
 }
