@@ -143,6 +143,14 @@ const List<DesignQuestion> questions = [
     options: ['none', 'primary_accent', 'primary_custom'],
   ),
   DesignQuestion(
+    id: 'background_image',
+    title: 'هل تحب أن تكون خلفية تطبيقك صورة؟',
+    description: 'يمكنك اختيار إحدى الصور الجاهزة أو إضافة صورة خاصة من جهازك.',
+    type: QuestionType.multiChoice,
+    options:  [],
+    maxSelections: 1,
+  ),
+  DesignQuestion(
     id: 'borders',
     title: 'كيف تفضل أن تكون إطارات البطاقات؟',
     description:
@@ -212,6 +220,7 @@ const List<DesignQuestion> questions = [
       'مستقبلي جدًا',
     ],
   ),
+
   DesignQuestion(
     id: 'preferred_shapes',
     title: 'ما نوع الأشكال التي تحب رؤيتها في التطبيق؟',
@@ -221,7 +230,6 @@ const List<DesignQuestion> questions = [
     type: QuestionType.shapePreview,
     options: [
       'مستطيلات',
-      'مستطيلات بحواف دائرية',
       'دوائر',
       'أشكال هندسية متنوعة',
       'أشكال ناعمة وغير منتظمة',
@@ -233,7 +241,8 @@ const List<DesignQuestion> questions = [
   DesignQuestion(
     id: 'ui_style',
     title: 'أي شكل من هذه التطبيقات يشبه ما تتخيله؟',
-    description: 'قارن النماذج المرسومة، وليس أسماء الأساليب. يمكنك تخطي السؤال.',
+    description:
+        'قارن النماذج المرسومة، وليس أسماء الأساليب. يمكنك تخطي السؤال.',
     type: QuestionType.uiStylePreview,
     options: [
       'بسيط ومسطح',
@@ -252,7 +261,8 @@ const List<DesignQuestion> questions = [
   DesignQuestion(
     id: 'depth',
     title: 'هل تحب أن تبدو العناصر على مستوى واحد أم بطبقات؟',
-    description: 'اختر الدرجة الأقرب لذوقك. المستويات الأعلى تعني عمقًا بصريًا أكبر.',
+    description:
+        'اختر الدرجة الأقرب لذوقك. المستويات الأعلى تعني عمقًا بصريًا أكبر.',
     type: QuestionType.scale,
     options: [
       'كل شيء مسطح تقريبًا',
@@ -286,7 +296,8 @@ const List<DesignQuestion> questions = [
   DesignQuestion(
     id: 'information_presentation',
     title: 'كيف تحب أن تظهر التفاصيل داخل التطبيق؟',
-    description: 'هل تريد رؤية أكبر قدر من المعلومات فورًا أم فتح التفاصيل عند الحاجة؟',
+    description:
+        'هل تريد رؤية أكبر قدر من المعلومات فورًا أم فتح التفاصيل عند الحاجة؟',
     type: QuestionType.singleChoice,
     options: [
       'كل المعلومات المهمة ظاهرة مباشرة',
@@ -298,7 +309,8 @@ const List<DesignQuestion> questions = [
   DesignQuestion(
     id: 'font_personality',
     title: 'أي خط عربي تفضّل لتطبيقك؟',
-    description: 'قارن بين خطوط عربية حقيقية. يمكنك أيضًا كتابة اسم خط آخر تفضّله.',
+    description:
+        'قارن بين خطوط عربية حقيقية. يمكنك أيضًا كتابة اسم خط آخر تفضّله.',
     type: QuestionType.typographyPreview,
     options: [
       'Cairo',
@@ -333,9 +345,13 @@ const List<DesignQuestion> questions = [
     description: 'مثل الصور الواقعية أو الرسوم التوضيحية أو الأشكال المجردة.',
     type: QuestionType.singleChoice,
     options: [
-      'صور حقيقية', 'رسوم توضيحية', 'رسومات كرتونية',
-      'مجسمات ثلاثية الأبعاد', 'أيقونات فقط',
-      'أشكال زخرفية مجردة', 'مزيج من الأنواع',
+      'صور حقيقية',
+      'رسوم توضيحية',
+      'رسومات كرتونية',
+      'مجسمات ثلاثية الأبعاد',
+      'أيقونات فقط',
+      'أشكال زخرفية مجردة',
+      'مزيج من الأنواع',
     ],
   ),
   DesignQuestion(
@@ -344,8 +360,12 @@ const List<DesignQuestion> questions = [
     description: 'الأيقونة هي الرمز الصغير مثل المنزل أو البحث. اختر بصريًا.',
     type: QuestionType.iconPreview,
     options: [
-      'بسيطة جدًا', 'خطوط رفيعة', 'ممتلئة',
-      'ملونة', 'تبدو ثلاثية الأبعاد', 'أترك الاختيار للمصمم',
+      'بسيطة جدًا',
+      'خطوط رفيعة',
+      'ممتلئة',
+      'ملونة',
+      'تبدو ثلاثية الأبعاد',
+      'أترك الاختيار للمصمم',
     ],
   ),
   // الحركة
@@ -355,8 +375,11 @@ const List<DesignQuestion> questions = [
     description: 'من واجهة ثابتة تقريبًا إلى حركات انتقال كثيرة.',
     type: QuestionType.scale,
     options: [
-      'تقريبًا دون حركات', 'حركات قليلة', 'حركات متوازنة',
-      'حركات واضحة', 'كثير من الحركات',
+      'تقريبًا دون حركات',
+      'حركات قليلة',
+      'حركات متوازنة',
+      'حركات واضحة',
+      'كثير من الحركات',
     ],
   ),
   DesignQuestion(
@@ -365,8 +388,10 @@ const List<DesignQuestion> questions = [
     description: 'مثل تغير اللون أو الحركة أو ظهور تأكيد بعد الضغط.',
     type: QuestionType.singleChoice,
     options: [
-      'تغيير بسيط جدًا', 'استجابة ناعمة وخفيفة',
-      'تغيير واضح يدل على نجاح الضغط', 'استجابة مرحة وقوية',
+      'تغيير بسيط جدًا',
+      'استجابة ناعمة وخفيفة',
+      'تغيير واضح يدل على نجاح الضغط',
+      'استجابة مرحة وقوية',
     ],
   ),
   // مراجع بصرية اختيارية: لا تُطلب معرفة تقنية من العميل.

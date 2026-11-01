@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import '../models/design_color_tokens.dart';
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class LiveDesignPreview extends StatefulWidget {
@@ -85,6 +87,34 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
     return Color(int.parse(value.substring(1), radix: 16) | 0xFF000000);
   }
 
+  ImageProvider? _backgroundImageProvider() {
+    final value = answer('background_image');
+
+    if (value == null || value.isEmpty || value == 'none') {
+      return null;
+    }
+
+    switch (value) {
+      case 'asset:nature':
+        return const AssetImage('assets/images/backgrounds/nature.png');
+      case 'asset:future':
+        return const AssetImage('assets/images/backgrounds/future.png');
+      case 'asset:space':
+        return const AssetImage('assets/images/backgrounds/space.png');
+      case 'asset:city':
+        return const AssetImage('assets/images/backgrounds/city.png');
+    }
+
+    if (value.startsWith('file:')) {
+      final path = value.substring(5);
+      if (path.isNotEmpty) {
+        return FileImage(File(path));
+      }
+    }
+
+    return null;
+  }
+
   int optionIndex(String id, List<String> options) {
     return options.indexOf(answer(id) ?? '');
   }
@@ -124,6 +154,9 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
     final hasAccent = tokens.selectedAccent != null;
 
     final previewGradient = tokens.gradient;
+
+    final backgroundImageProvider = _backgroundImageProvider();
+    final hasBackgroundImage = backgroundImageProvider != null;
 
     final radiusIndex = optionIndex('corners', [
       'حواف حادة',
@@ -221,285 +254,323 @@ class _LiveDesignPreviewState extends State<LiveDesignPreview>
       ),
       child: Container(
         clipBehavior: Clip.antiAlias,
-
         decoration: BoxDecoration(
-          color: previewGradient == null ? background : null,
-          gradient: previewGradient,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: effectiveBorderColor),
         ),
-
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ----- الشريط العلوي -----
-
-              Container(
-                color: primary,
-                padding: const EdgeInsets.all(17),
-                child: Row(
-                  children: [
-                    Icon(Icons.dashboard_outlined, color: accent),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'تطبيقي',
-                        style: TextStyle(
-                          fontFamily: previewFont,
-                          color: readableText(primary),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.menu, color: accent),
-                  ],
-                ),
+        child: Stack(
+          children: [
+            if (backgroundImageProvider != null)
+              Positioned.fill(
+                child: Image(image: backgroundImageProvider, fit: BoxFit.cover),
               ),
 
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // ----- العناوين -----
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: !hasBackgroundImage && previewGradient == null
+                      ? background
+                      : null,
+                  gradient: !hasBackgroundImage
+                      ? previewGradient
+                      : LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: darkMode
+                              ? [
+                                  const Color(0xCC0F172A),
+                                  primary.withValues(alpha: 0.01),
+                                ]
+                              : [
+                                  const Color(0xBFF8FAFF),
+                                  primary.withValues(alpha: 0.01),
+                                ],
+                        ),
+                ),
+              ),
+            ),
 
-                    Text(
-                      'مرحبًا بك',
-                      style: TextStyle(
-                        fontFamily: previewFont,
-                        color: readableText(background),
-                        fontSize: headingSize,
-                        fontWeight: headingWeight,
-                      ),
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ----- الشريط العلوي -----
+
+                  Container(
+                    color: primary,
+                    padding: const EdgeInsets.all(17),
+                    child: Row(
+                      children: [
+                        Icon(Icons.dashboard_outlined, color: accent),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'تطبيقي',
+                            style: TextStyle(
+                              fontFamily: previewFont,
+                              color: readableText(primary),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.menu, color: accent),
+                      ],
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'اكتشف الخدمات المتاحة',
-                      style: TextStyle(
-                        fontFamily: previewFont,
-                        color: readableText(background).withValues(alpha: 0.85),
-                        fontSize: 13,
-                      ),
-                    ),
+                  ),
 
-                    const SizedBox(height: 23),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // ----- العناوين -----
 
-                    // ----- البطاقات الثلاث -----
-                    AnimatedBuilder(
-                      animation: _motion,
-                      builder: (context, _) {
-                        final intensity = _motionLevel / 4.0;
-                        Widget card(int index, IconData icon, String label) {
-                          final phase =
-                              _motion.value * 2 * math.pi + index * 0.7;
-                          final wave = math.sin(phase);
+                        Text(
+                          'مرحبًا بك',
+                          style: TextStyle(
+                            fontFamily: previewFont,
+                            color: readableText(background),
+                            fontSize: headingSize,
+                            fontWeight: headingWeight,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          'اكتشف الخدمات المتاحة',
+                          style: TextStyle(
+                            fontFamily: previewFont,
+                            color: readableText(background)
+                                .withValues(alpha: 0.85),
+                            fontSize: 13,
+                          ),
+                        ),
 
-                          final scaleAmount = 0.065 * intensity;
-                          final rotationAmount = 0.13 * intensity;
-                          final movementAmount = 14.0 * intensity;
+                        const SizedBox(height: 23),
 
-                          return Expanded(
-                            child: Transform.translate(
-                              offset: Offset(
-                                math.cos(phase) * movementAmount * 0.35,
-                                -wave * movementAmount,
-                              ),
-                              child: Transform.rotate(
-                                angle: wave * rotationAmount,
-                                child: Transform.scale(
-                                  scale: 1 + wave * scaleAmount,
-                                  child: _PreviewFeatureCard(
-                                    fontFamily: previewFont,
-                                    icon: icon,
-                                    label: label,
-                                    color: accent,
-                                    background: featureCardBackground,
-                                    textColor: readableText(primary),
-                                    borderColor: effectiveBorderColor,
-                                    radius: radius,
-                                    shadow: shadows,
-                                    borderWidth: borderWidth,
-                                    shapeStyle: preferredShape,
-                                    index: index,
+                        // ----- البطاقات الثلاث -----
+                        AnimatedBuilder(
+                          animation: _motion,
+                          builder: (context, _) {
+                            final intensity = _motionLevel / 4.0;
+                            Widget card(
+                              int index,
+                              IconData icon,
+                              String label,
+                            ) {
+                              final phase =
+                                  _motion.value * 2 * math.pi + index * 0.7;
+                              final wave = math.sin(phase);
+
+                              final scaleAmount = 0.065 * intensity;
+                              final rotationAmount = 0.13 * intensity;
+                              final movementAmount = 14.0 * intensity;
+
+                              return Expanded(
+                                child: Transform.translate(
+                                  offset: Offset(
+                                    math.cos(phase) * movementAmount * 0.35,
+                                    -wave * movementAmount,
+                                  ),
+                                  child: Transform.rotate(
+                                    angle: wave * rotationAmount,
+                                    child: Transform.scale(
+                                      scale: 1 + wave * scaleAmount,
+                                      child: _PreviewFeatureCard(
+                                        fontFamily: previewFont,
+                                        icon: icon,
+                                        label: label,
+                                        color: accent,
+                                        background: featureCardBackground,
+                                        textColor: readableText(primary),
+                                        borderColor: effectiveBorderColor,
+                                        radius: radius,
+                                        shadow: shadows,
+                                        borderWidth: borderWidth,
+                                        shapeStyle: preferredShape,
+                                        index: index,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }
+                              );
+                            }
 
-                        return Row(
-                          children: [
-                            card(0, Icons.home_outlined, 'الرئيسية'),
-                            const SizedBox(width: 16),
-                            card(1, Icons.star_outline, 'المميزات'),
-                            const SizedBox(width: 16),
-                            card(2, Icons.person_outline, 'الحساب'),
-                          ],
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 28),
-
-                    // ----- البطاقة التجريبية -----
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: glassBackdrop,
-                        borderRadius: BorderRadius.circular(radius),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(radius),
-                          boxShadow: shadows,
+                            return Row(
+                              children: [
+                                card(0, Icons.home_outlined, 'الرئيسية'),
+                                const SizedBox(width: 16),
+                                card(1, Icons.star_outline, 'المميزات'),
+                                const SizedBox(width: 16),
+                                card(2, Icons.person_outline, 'الحساب'),
+                              ],
+                            );
+                          },
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(radius),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaX: glassBlur,
-                              sigmaY: glassBlur,
+
+                        const SizedBox(height: 28),
+
+                        // ----- البطاقة التجريبية -----
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: glassBackdrop,
+                            borderRadius: BorderRadius.circular(radius),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(radius),
+                              boxShadow: shadows,
                             ),
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: demoCardColor.withValues(
-                                  alpha: glassAlpha,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(radius),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: glassBlur,
+                                  sigmaY: glassBlur,
                                 ),
-                                border: borderWidth == 0
-                                    ? null
-                                    : Border.all(
-                                        color: effectiveBorderColor,
-                                        width: borderWidth,
-                                      ),
-                                borderRadius: BorderRadius.circular(radius),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Row(
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: demoCardColor.withValues(
+                                      alpha: glassAlpha,
+                                    ),
+                                    border: borderWidth == 0
+                                        ? null
+                                        : Border.all(
+                                            color: effectiveBorderColor,
+                                            width: borderWidth,
+                                          ),
+                                    borderRadius: BorderRadius.circular(radius),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
-                                      Icon(
-                                        Icons.widgets_outlined,
-                                        color: accent,
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.widgets_outlined,
+                                            color: accent,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              'بطاقة تجريبية',
+                                              style: TextStyle(
+                                                fontFamily: previewFont,
+                                                color: readableText(
+                                                  demoCardColor,
+                                                ),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          'بطاقة تجريبية',
-                                          style: TextStyle(
-                                            fontFamily: previewFont,
-                                            color: readableText(demoCardColor),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'هنا يظهر شكل البطاقة والألوان '
+                                        'والظل الذي اخترته.',
+                                        style: TextStyle(
+                                          fontFamily: previewFont,
+                                          color: readableText(demoCardColor),
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+
+                                      // عنصر ملون داخل البطاقة.
+                                      Container(
+                                        height: 9,
+                                        decoration: BoxDecoration(
+                                          color: hasAccent ? accent : primary,
+                                          borderRadius: BorderRadius.circular(
+                                            radius,
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    'هنا يظهر شكل البطاقة والألوان '
-                                    'والظل الذي اخترته.',
-                                    style: TextStyle(
-                                      fontFamily: previewFont,
-                                      color: readableText(demoCardColor),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-
-                                  // عنصر ملون داخل البطاقة.
-                                  Container(
-                                    height: 9,
-                                    decoration: BoxDecoration(
-                                      color: hasAccent ? accent : primary,
-                                      borderRadius: BorderRadius.circular(
-                                        radius,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                    // ----- زر رئيسي -----
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(radius),
-                        boxShadow: shadows,
-                      ),
-                      child: FilledButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.arrow_forward),
-                        label: Text(
-                          'ابدأ الآن',
-                          style: TextStyle(fontFamily: previewFont),
-                        ),
-                        style: FilledButton.styleFrom(
-                          textStyle: TextStyle(fontFamily: previewFont),
-                          backgroundColor: hasAccent ? accent : primary,
-                          foregroundColor: readableText(
-                            hasAccent ? accent : primary,
-                          ),
-                          elevation: 0,
-                          minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(
+                        // ----- زر رئيسي -----
+                        DecoratedBox(
+                          decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(radius),
+                            boxShadow: shadows,
                           ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // ----- عنصر ثانوي -----
-                    Container(
-                      padding: const EdgeInsets.all(13),
-                      decoration: BoxDecoration(
-                        color: primary,
-                        borderRadius: BorderRadius.circular(radius),
-                        border: borderWidth == 0
-                            ? null
-                            : Border.all(
-                                color: effectiveBorderColor,
-                                width: borderWidth,
+                          child: FilledButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.arrow_forward),
+                            label: Text(
+                              'ابدأ الآن',
+                              style: TextStyle(fontFamily: previewFont),
+                            ),
+                            style: FilledButton.styleFrom(
+                              textStyle: TextStyle(fontFamily: previewFont),
+                              backgroundColor: hasAccent ? accent : primary,
+                              foregroundColor: readableText(
+                                hasAccent ? accent : primary,
                               ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.info_outline, color: accent),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'عنصر إضافي من تصميمك',
-                              style: TextStyle(
-                                fontFamily: previewFont,
-                                color: readableText(primary),
-                                fontSize: 13,
+                              elevation: 0,
+                              minimumSize: const Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(radius),
                               ),
                             ),
                           ),
-                          Icon(
-                            Icons.chevron_left,
-                            color: hasAccent ? accent : primary,
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // ----- عنصر ثانوي -----
+                        Container(
+                          padding: const EdgeInsets.all(13),
+                          decoration: BoxDecoration(
+                            color: primary,
+                            borderRadius: BorderRadius.circular(radius),
+                            border: borderWidth == 0
+                                ? null
+                                : Border.all(
+                                    color: effectiveBorderColor,
+                                    width: borderWidth,
+                                  ),
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.info_outline, color: accent),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'عنصر إضافي من تصميمك',
+                                  style: TextStyle(
+                                    fontFamily: previewFont,
+                                    color: readableText(primary),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_left,
+                                color: hasAccent ? accent : primary,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

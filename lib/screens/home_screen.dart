@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'questionnaire_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,47 +8,73 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('DesignLens'), centerTitle: true),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(18),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Spacer(),
-              const Icon(
-                Icons.palette_outlined,
-                size: 88,
-                color: Color(0xFF2455A4),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'حوّل فكرة العميل إلى تصميم واضح',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'اختر الأشكال والألوان التي تعجبك، '
-                'وسنحوّل اختياراتك إلى وصف تصميم احترافي.',
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(),
-              FilledButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (_) => const QuestionnaireScreen(),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                    image: const DecorationImage(
+                      image: AssetImage(
+                        'assets/images/home/home_hero_background.png',
+                      ),
+                      fit: BoxFit.cover,
                     ),
-                  );
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Text('بدء تصميم جديد'),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.04),
+                          Colors.black.withValues(alpha: 0.06),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const QuestionnaireScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text(
+                    'ابدأ تصميم جديد',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -55,4 +82,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-

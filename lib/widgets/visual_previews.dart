@@ -232,28 +232,17 @@ class ShapeOptionPreview extends StatelessWidget {
         );
         break;
 
-      case 2:
-        preview = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            shape(
-              width: 65,
-              height: 65,
-              border: const CircleBorder(),
-            ),
-            const SizedBox(width: 12),
-            shape(
-              width: 65,
-              height: 65,
-              border: const BeveledRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(18),
-                ),
-              ),
-            ),
-          ],
-        );
-        break;
+case 2:
+  preview = shape(
+    width: 100,
+    height: 85,
+    border: const BeveledRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(25),
+      ),
+    ),
+  );
+  break;
 
       case 3:
         preview = ClipPath(
